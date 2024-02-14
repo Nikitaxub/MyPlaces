@@ -38,6 +38,11 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         searchController.searchBar.placeholder = "Search"
         navigationItem.searchController = searchController
         definesPresentationContext = true
+        
+        CloudManager.fetchDataFromCloud { place in
+            StorageManager.saveObject(place)
+            self.tableView.reloadData()
+        }
     }
 
     // MARK: - Table view data source
