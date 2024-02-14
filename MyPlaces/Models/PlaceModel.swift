@@ -11,6 +11,7 @@ import CloudKit
 
 class Place: Object {
     
+    @objc dynamic var placeID = UUID().uuidString
     @objc dynamic var name = ""
     @objc dynamic var location: String?
     @objc dynamic var type: String?
@@ -34,10 +35,15 @@ class Place: Object {
         let imageAsset = possibleImage as! CKAsset
         guard let imageData = try? Data.init(contentsOf: imageAsset.fileURL!) else { return }
         
+        self.placeID = record.value(forKey: "placeID") as! String
         self.name = record.value(forKey: "name") as! String
         self.location = record.value(forKey: "location") as? String
         self.type = record.value(forKey: "type") as? String
         self.imageData = imageData
         self.rating = record.value(forKey: "rating") as! Double
+    }
+    
+    static override func primaryKey() -> String? {
+        "placeID"
     }
 }
