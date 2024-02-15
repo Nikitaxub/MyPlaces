@@ -14,7 +14,7 @@ class CloudManager {
     
     private static let privateCloudDatabase = CKContainer(identifier: "iCloud.com.nikitaxub.MyPlaces").privateCloudDatabase
     
-    static func saveDataToCloud(place: Place, with image: UIImage) {
+    static func saveDataToCloud(place: Place, with image: UIImage, closure: @escaping (String) -> ()) {
         
         let (image, url) = prepareImageToSaveToCloud(place: place, image: image)
         
@@ -28,12 +28,14 @@ class CloudManager {
         record.setValue(place.rating, forKey: "rating")
         record.setValue(imageAsset, forKey: "imageData")
         
-        privateCloudDatabase.save(record) { (_, error) in
+        privateCloudDatabase.save(record) { (newRecord, error) in
             if let error = error {
                 print(error.localizedDescription)
                 return
             }
-            
+            if let newRecord = newRecord {
+                closure(newRecord.recordID.recordName)
+            }
             deleteTempImage(imageURL: imageURL)
         }
     }

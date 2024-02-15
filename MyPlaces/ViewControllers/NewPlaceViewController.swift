@@ -111,7 +111,13 @@ class NewPlaceViewController: UITableViewController {
                 currentPlace?.rating = newPlace.rating
             }
         } else {
-            CloudManager.saveDataToCloud(place: newPlace, with: image)
+            CloudManager.saveDataToCloud(place: newPlace, with: image) { recordName in
+                DispatchQueue.main.async {
+                    try! realm.write {
+                        newPlace.recordName = recordName
+                    }
+                }
+            }
             StorageManager.saveObject(newPlace)
         }
     }
