@@ -109,6 +109,8 @@ class NewPlaceViewController: UITableViewController {
                 currentPlace?.type = newPlace.type
                 currentPlace?.imageData = newPlace.imageData
                 currentPlace?.rating = newPlace.rating
+                
+                CloudManager.updateCloudData(place: currentPlace, with: image)
             }
         } else {
             CloudManager.saveDataToCloud(place: newPlace, with: image) { recordName in
