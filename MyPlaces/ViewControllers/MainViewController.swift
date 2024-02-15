@@ -64,6 +64,10 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         cell.typeLabel.text = place.type
         cell.imageOfPlace.image = UIImage(data: place.imageData!)
         cell.cosmosView.rating = place.rating
+        
+        CloudManager.getImageFromCloud(place: place) { imageData in
+            cell.imageOfPlace.image = UIImage(data: imageData!)
+        }
 
         return cell
     }

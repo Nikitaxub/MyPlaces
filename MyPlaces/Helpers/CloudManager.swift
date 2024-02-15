@@ -99,6 +99,31 @@ class CloudManager {
         }
     }
     
+    static func getImageFromCloud(place: Place, closure: @escaping (Data?) -> ()) {
+        
+        records.forEach { record in
+            let fetchRecordsOperation = CKFetchRecordsOperation(recordIDs: [record.recordID])
+            fetchRecordsOperation.desiredKeys = ["imageData"]
+            fetchRecordsOperation.queuePriority = .veryHigh
+            
+            fetchRecordsOperation.perRecordCompletionBlock = { (record, _, error) in
+                guard error == nil else { return }
+                guard let record = record else { return }
+                guard let possibleImage = record.value(forKey: "imageData") as? CKAsset else { return }
+                guard let imageData = try? Data(contentsOf: possibleImage.fileURL!) else { return }
+                
+                DispatchQueue.main.async {
+                    try! realm.write{
+                        place.imageData = imageData
+                    }
+                    closure(imageData)
+                }
+            }
+            
+            privateCloudDatabase.add(fetchRecordsOperation)
+        }
+    }
+    
     // MARK: Private Methods
     private static func prepareImageToSaveToCloud(place: Place, image: UIImage) -> (CKAsset?, URL?) {
         
