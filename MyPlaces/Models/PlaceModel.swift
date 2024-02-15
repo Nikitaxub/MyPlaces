@@ -32,10 +32,9 @@ class Place: Object {
     convenience init(record: CKRecord) {
         self.init()
         
-        guard let possibleImage = record.value(forKey: "imageData") else { return }
-        let imageAsset = possibleImage as! CKAsset
-        guard let imageData = try? Data.init(contentsOf: imageAsset.fileURL!) else { return }
-        
+        let image = #imageLiteral(resourceName: "imagePlaceholder")
+        let imageData = image.pngData()
+       
         self.placeID = record.value(forKey: "placeID") as! String
         self.recordName = record.recordID.recordName
         self.name = record.value(forKey: "name") as! String
