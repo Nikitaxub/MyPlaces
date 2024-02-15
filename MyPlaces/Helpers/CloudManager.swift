@@ -67,7 +67,7 @@ class CloudManager {
     static func updateCloudData(place: Place, with image: UIImage) {
         
         let recordID = CKRecord.ID(recordName: place.recordName)
-        print(recordID.recordName)
+        
         let (image, url) = prepareImageToSaveToCloud(place: place, image: image)
         guard let imageAsset = image, let imageUrl = url else { return }
         
