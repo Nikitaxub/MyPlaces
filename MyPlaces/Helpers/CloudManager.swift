@@ -138,6 +138,35 @@ class CloudManager {
             privateCloudDatabase.add(fetchRecordsOperation)
     }
     
+    static func deleteRecord(recordName: String) {
+        
+        let query = CKQuery(recordType: "Place", predicate: NSPredicate(value: true))
+        let queryOperation = CKQueryOperation(query: query)
+        queryOperation.desiredKeys = ["recordID.recordName"]
+        queryOperation.queuePriority = .veryHigh
+        
+        queryOperation.recordFetchedBlock = { record in
+            
+            if record.recordID.recordName == recordName {
+                privateCloudDatabase.delete(withRecordID: record.recordID) { (_, error) in
+                    if let error = error {
+                        print(error.localizedDescription)
+                        return
+                    }
+                }
+            }
+        }
+        
+        queryOperation.queryCompletionBlock = { (_, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+        }
+        
+        privateCloudDatabase.add(queryOperation)
+    }
+    
     // MARK: Private Methods
     private static func prepareImageToSaveToCloud(place: Place, image: UIImage) -> (CKAsset?, URL?) {
         

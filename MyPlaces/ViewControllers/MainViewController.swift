@@ -26,10 +26,10 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet var tableView: UITableView!
     @IBOutlet var segmentedControl: UISegmentedControl!
     @IBOutlet var reversedSortingButton: UIBarButtonItem!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         places = realm.objects(Place.self)
         
         //Setup the search controller
@@ -50,23 +50,23 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
         }
     }
-
+    
     // MARK: - Table view data source
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isFiltering {
             return filteredPlaces.count
         }
         return places.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
         
         let place = isFiltering ? filteredPlaces[indexPath.row] : places[indexPath.row]
         
         cell.configureCell(place: place)
-
+        
         return cell
     }
     
@@ -81,15 +81,19 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let place = places[indexPath.row]
         let deleteAction = UITableViewRowAction(style: .default, title: "Delete") { (_, _) in
             
-            StorageManager.deleteObject(place)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
+            self.showAlert(title: "To delete a record?",
+                           message: "This record will be deleted from all your devices") {
+                CloudManager.deleteRecord(recordName: place.recordName)
+                StorageManager.deleteObject(place)
+                tableView.deleteRows(at: [indexPath], with: .automatic)
+            }
         }
         
         return [deleteAction]
     }
-
+    
     // MARK: - Navigation
-
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             guard let indexPath = tableView.indexPathForSelectedRow else { return }
@@ -108,7 +112,7 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         newPlaceVC.savePlace()
         tableView.reloadData()
     }
-
+    
     @IBAction func sortSelection(_ sender: UISegmentedControl) {
         
         sorting()
@@ -136,6 +140,20 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         
         tableView.reloadData()
+    }
+    
+    private func showAlert(title: String, message: String, closure: @escaping () -> ()) {
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
+            closure()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
     }
 }
 
