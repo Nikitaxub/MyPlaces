@@ -59,15 +59,7 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         let place = isFiltering ? filteredPlaces[indexPath.row] : places[indexPath.row]
         
-        cell.nameLabel.text = place.name
-        cell.locationLabel.text = place.location
-        cell.typeLabel.text = place.type
-        cell.imageOfPlace.image = UIImage(data: place.imageData!)
-        cell.cosmosView.rating = place.rating
-        
-        CloudManager.getImageFromCloud(place: place) { imageData in
-            cell.imageOfPlace.image = UIImage(data: imageData!)
-        }
+        cell.configureCell(place: place)
 
         return cell
     }
