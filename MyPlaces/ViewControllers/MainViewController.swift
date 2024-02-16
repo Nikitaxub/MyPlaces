@@ -42,6 +42,12 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         CloudManager.fetchDataFromCloud(places: places) { place in
             StorageManager.saveObject(place)
             self.tableView.reloadData()
+            CloudManager.getImageFromCloud(place: place) { imageData in
+                try! realm.write({
+                    place.imageData = imageData
+                })
+                self.tableView.reloadData()
+            }
         }
     }
 

@@ -32,9 +32,5 @@ class CustomTableViewCell: UITableViewCell {
         typeLabel.text = place.type
         imageOfPlace.image = UIImage(data: place.imageData!)
         cosmosView.rating = place.rating
-        
-        CloudManager.getImageFromCloud(place: place) { imageData in
-            self.imageOfPlace.image = UIImage(data: imageData!)
-        }
     }
 }

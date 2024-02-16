@@ -101,7 +101,7 @@ class CloudManager {
     
     static func getImageFromCloud(place: Place, closure: @escaping (Data?) -> ()) {
         
-        records.forEach { record in
+        guard let record = records.filter({ $0.recordID.recordName == place.recordName }).first else { return }
             let fetchRecordsOperation = CKFetchRecordsOperation(recordIDs: [record.recordID])
             fetchRecordsOperation.desiredKeys = ["imageData"]
             fetchRecordsOperation.queuePriority = .veryHigh
@@ -113,15 +113,11 @@ class CloudManager {
                 guard let imageData = try? Data(contentsOf: possibleImage.fileURL!) else { return }
                 
                 DispatchQueue.main.async {
-                    try! realm.write{
-                        place.imageData = imageData
-                    }
                     closure(imageData)
                 }
             }
             
             privateCloudDatabase.add(fetchRecordsOperation)
-        }
     }
     
     // MARK: Private Methods
